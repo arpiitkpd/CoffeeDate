@@ -5,8 +5,8 @@
   <title>Coffee Date? ☕</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- EmailJS Library -->
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
     body {
@@ -30,8 +30,16 @@
       max-width: 360px;
     }
 
-    h1 { color: #ff4d6d; }
-    h2 { font-weight: normal; color: #555; }
+    h1 {
+      color: #ff4d6d;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin: 5px 0;
+      font-weight: normal;
+      color: #555;
+    }
 
     button {
       padding: 12px 22px;
@@ -45,6 +53,7 @@
     #yesBtn {
       background: #ff4d6d;
       color: white;
+      margin-top: 20px;
     }
 
     #noBtn {
@@ -64,7 +73,7 @@
       border-radius: 30px;
       opacity: 0;
       pointer-events: none;
-      transition: 0.4s;
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
     .toast.show {
@@ -89,11 +98,26 @@
   </div>
 
   <script>
-    // INIT EMAILJS
-    (function() {
-      emailjs.init("vmPhTcYwtWyTgfPhl");
-    })();
+    /* =====================
+       EMAILJS INIT
+    ====================== */
+    emailjs.init("vmPhTcYwtWyTgfPhl"); // 🔴 replace
 
+    function sendYesEmail() {
+      emailjs.send("service_r5j476o", "template_8esmfp5", {
+        time: new Date().toLocaleString()
+      })
+      .then(() => {
+        console.log("Email sent 💌");
+      })
+      .catch(error => {
+        console.error("Email failed ❌", error);
+      });
+    }
+
+    /* =====================
+       BUTTON LOGIC
+    ====================== */
     const noBtn = document.getElementById("noBtn");
     const yesBtn = document.getElementById("yesBtn");
     const toast = document.getElementById("toast");
@@ -110,12 +134,15 @@
     let count = 0;
 
     function moveNoButton() {
-      const maxX = window.innerWidth - noBtn.offsetWidth - 20;
-      const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+      const padding = 20;
+      const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+      const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
-      noBtn.style.left = Math.random() * maxX + "px";
-      noBtn.style.top = Math.random() * maxY + "px";
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
 
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top = `${y}px`;
       noBtn.textContent = texts[count % texts.length];
       count++;
     }
@@ -125,15 +152,11 @@
 
     yesBtn.addEventListener("click", () => {
       toast.classList.add("show");
-
-      // SEND EMAIL
-      emailjs.send("service_r5j476o", "template_8esmfp5", {
-        time: new Date().toLocaleString()
-      });
-
+      sendYesEmail();
       setTimeout(() => toast.classList.remove("show"), 3000);
     });
 
+    // initial placement
     moveNoButton();
   </script>
 
